@@ -5,9 +5,9 @@
 package com.rakkiics3560.minitwitter;
 
 /**
- *
- * @author RAKKII
+ * Message sent to the Mini Twitter system.
+ * @author Rakkii
  */
-public interface SysEntry {
+public interface SysEntry extends Visitable {
     
 }

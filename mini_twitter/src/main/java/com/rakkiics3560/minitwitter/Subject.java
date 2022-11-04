@@ -8,6 +8,6 @@ package com.rakkiics3560.minitwitter;
  *
  * @author RAKKII
  */
-public class Subject {
+public abstract class Subject {
     
 }

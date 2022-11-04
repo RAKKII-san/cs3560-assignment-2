@@ -4,10 +4,14 @@
  */
 package com.rakkiics3560.minitwitter;
 
+import java.util.UUID;
+
 /**
  *
  * @author RAKKII
  */
 public class User {
-    // UUID
+    // Unique ID
+    private UUID id;
+    
 }
