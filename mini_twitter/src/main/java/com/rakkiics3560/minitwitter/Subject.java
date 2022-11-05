@@ -9,5 +9,5 @@ package com.rakkiics3560.minitwitter;
  * @author RAKKII
  */
 public abstract class Subject {
-    
+    // part of observer pattern
 }

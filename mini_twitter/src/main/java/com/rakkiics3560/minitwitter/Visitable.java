@@ -6,8 +6,8 @@ package com.rakkiics3560.minitwitter;
 
 /**
  *
- * @author RAKKII
+ * @author Rakkii
  */
 public interface Visitable {
-    
+    public void accept();
 }
