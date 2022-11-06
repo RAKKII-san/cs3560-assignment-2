@@ -1,15 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.rakkiics3560.minitwitter;
 
-import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import java.awt.event.ActionListener;
-import java.util.List;
+import javax.swing.SwingConstants;
+import javax.swing.tree.TreeModel;
+import javax.swing.WindowConstants;
+
 
 /**
  * Views all users and groups in a tree view, as well as
@@ -23,57 +30,86 @@ public class AdminPanel extends javax.swing.JFrame {
     protected static List<User> users;
     protected static List<Group> groups;
 
+    private JTree tree;
+
+    private static JFrame frame;
+
     // Private constructor
     private AdminPanel() {
         if (adminInstance == null) {
             adminInstance = this;
+            users = new ArrayList<>();
+            groups = new ArrayList<>();
+            tree = new JTree();
+            
+            groups.add(new Group("Root"));
             initComponents();
         }
     }
     
     /** Builds UI for the Admin Panel. */
     private void initComponents() {
-        countUserButton = new JButton();
+        countUsersButton = new JButton();
+        countGroupsButton = new JButton();
         
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mini Twitter Admin Panel");
         
-        countUserButton.setText("Count Users");
-        countUserButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                
+        countUsersButton.setText("Count Users");
+        countUsersButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                JOptionPane.showMessageDialog(frame, "Total Number of Users: " + users.size());
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        countGroupsButton.setText("Count Groups");
+        countGroupsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                JOptionPane.showMessageDialog(frame, "Total Number of Groups: " + groups.size());
+            }
+        });
+
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(
+                    GroupLayout.Alignment.LEADING
+                )
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(countUserButton)
+                        .addComponent(countUsersButton)
+                        .addComponent(countGroupsButton)
                     )
                 )
                 .addContainerGap()
             )
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {countUserButton});
+        layout.linkSize(
+            SwingConstants.HORIZONTAL, 
+            new Component[] {countUsersButton, countGroupsButton}
+        );
 
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(
+                    GroupLayout.Alignment.LEADING
+                )
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(countUserButton)
+                        .addComponent(countUsersButton)
+                    )
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(countGroupsButton)
                     )
                 )
                 .addContainerGap()
             )
         );
+
         pack();
     }
     
@@ -86,14 +122,19 @@ public class AdminPanel extends javax.swing.JFrame {
     }
     
     // create users
-        // might need a button for this?
+    public void addUser() {
+        
+    }
     // create user groups
         // also might need a button for this?
     // make root group
         // fine to hardcode??? idk
 
     // Variables declaration               
-    private javax.swing.JButton countUserButton;
+    private JButton countUsersButton;
+    private JButton countGroupsButton;
+    private JButton addUserButton;
+    private JButton addGroupButton;
 
     // End of variables declaration       
 }

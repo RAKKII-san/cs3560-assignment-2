@@ -4,6 +4,7 @@
  */
 package com.rakkiics3560.minitwitter;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * User/Group entries in the Mini Twitter system.
@@ -11,6 +12,6 @@ import javax.swing.tree.TreeModel;
  * @author Rakkii
  */
 public interface SysEntry extends Visitable {
-    public void displayName();
+    public String getDisplayName();
     // TODO something something tree node jtree
 }

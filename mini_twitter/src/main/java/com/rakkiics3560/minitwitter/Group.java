@@ -6,31 +6,19 @@ package com.rakkiics3560.minitwitter;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
- * @author RAKKII
+ * @author Rakkii
  */
-public class Group implements SysEntry {
-    // unique id is determined by counter
-    private static int groupCounter = 0;
-    private int groupId;
+public class Group extends DefaultMutableTreeNode implements SysEntry {
     private String groupName;
     private List<User> userList;
     private List<Group> groupList; // recursive
 
+    // Established group name included in instantiation
     // Group can be instantiated by any number of users
-    public Group(User... users) {
-        userList = new ArrayList<>();
-        groupList = new ArrayList<>();
-        for (User user : users) {
-            userList.add(user);
-        }
-        groupId = groupCounter;
-        groupCounter++;
-    }
-
-    // Established preset name included in instantiation
     public Group(String name, User... users) {
         userList = new ArrayList<>();
         groupList = new ArrayList<>();
@@ -38,22 +26,12 @@ public class Group implements SysEntry {
             userList.add(user);
         }
         groupName = name;
-        groupId = groupCounter;
-        groupCounter++;
     }
 
     public void addMember(User user) {
         if (!userList.contains(user) && user.getGroupList().size() == 0) {
             userList.add(user);
         }
-    }
-
-    public int getGroupId() {
-        return groupId;
-    }
-
-    public String getGroupName() {
-        return groupName;
     }
 
     public void setGroupName(String name) {
@@ -71,12 +49,12 @@ public class Group implements SysEntry {
     @Override
     public void accept() {
         // TODO Auto-generated method stub
+        // Visitors?
         
     }
     @Override
-    public void displayName() {
-        // TODO Auto-generated method stub
-        
+    public String getDisplayName() {
+        return groupName;
     }
 
 }

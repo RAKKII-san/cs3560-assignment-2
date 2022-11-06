@@ -1,10 +1,8 @@
 package com.rakkiics3560.minitwitter;
 
 public interface Message {
-    // get user
-    public User getUser();
-    // get message
+    public User getAuthor();
     public String getMessage();
     // get timestamp
-    
+    // maybe not for Assignment 2 yet but for sure for Assignment 3
 }

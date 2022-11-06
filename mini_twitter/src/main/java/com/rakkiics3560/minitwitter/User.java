@@ -4,14 +4,15 @@
  */
 package com.rakkiics3560.minitwitter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Basic functions checklist #2, #4, #5
  * @author RAKKII
  */
-public class User {
-
+public class User extends Subject implements Observer, SysEntry {
+    private String userId;
     private List<User> followersList;
     private List<User> followingList;
 
@@ -25,7 +26,16 @@ public class User {
      * a single user can only be in one group
      */
     private List<Group> groupList;
+    private Feed personalFeed;
     private Feed newsFeed;
+
+    public User(String name) {
+        userId = name;
+        followersList = new ArrayList<>();
+        followingList = new ArrayList<>();
+        personalFeed = new Feed();
+        newsFeed = new Feed();
+    }
 
     public void followUser(User user) {
         followingList.add(user);
@@ -51,5 +61,37 @@ public class User {
         return groupList;
     }
 
-    // make tweet
+    public Feed getPersonalFeed() {
+        return personalFeed;
+    }
+
+    public Feed getNewsFeed() {
+        return newsFeed;
+    }
+
+    @Override
+    public void accept() {
+        // TODO Accepts Visitors
+        
+    }
+
+    @Override
+    public String getDisplayName() {
+        return userId;
+    }
+
+    /**
+     * Creates a Tweet and posts it to current user's personal feed
+     * and news feed, as well as updating current user's followers'
+     * news feeds.
+     * @param message New tweet content.
+     */
+    public void postTweet(String message) {
+        Tweet newTweet = new Tweet(this, message);
+        personalFeed.addToFeed(newTweet);
+        newsFeed.addToFeed(newTweet);
+
+        // TODO update followers' feeds as well!
+        // TODO Observers?
+    }
 }
