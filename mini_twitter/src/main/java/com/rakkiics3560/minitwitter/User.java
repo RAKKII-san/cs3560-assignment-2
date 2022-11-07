@@ -29,10 +29,13 @@ public class User extends Subject implements Observer, SysEntry {
     private Feed personalFeed;
     private Feed newsFeed;
 
+    // TODO something something tree node jtree
+
     public User(String name) {
         userId = name;
         followersList = new ArrayList<>();
         followingList = new ArrayList<>();
+        observers = new ArrayList<>();
         personalFeed = new Feed();
         newsFeed = new Feed();
     }
@@ -40,12 +43,16 @@ public class User extends Subject implements Observer, SysEntry {
     public void followUser(User user) {
         followingList.add(user);
         user.getFollowersList().add(this);
+        newsFeed.mergeFeed(user.getPersonalFeed());
+        this.attach(user);
     }
 
     public void unfollowUser(User user) {
         if (followingList.contains(user)) {
             followingList.remove(user);
             user.getFollowersList().remove(this);
+            newsFeed.removeUnfollowedUser(user);
+            this.detach(user);
         }
     }
 
@@ -89,9 +96,26 @@ public class User extends Subject implements Observer, SysEntry {
     public void postTweet(String message) {
         Tweet newTweet = new Tweet(this, message);
         personalFeed.addToFeed(newTweet);
+
+        /** 
+         * User can see their own tweet in their newsFeed, so
+         * it can also be added there
+         */
         newsFeed.addToFeed(newTweet);
 
-        // TODO update followers' feeds as well!
-        // TODO Observers?
+        notifyObservers();
+    }
+
+    /** 
+     * 
+     */
+    @Override
+    public void update(Subject subject) {
+        if (subject instanceof User) {
+            Tweet newTweet = 
+                    this.newsFeed.getRevChronoTweetList().get(0);
+            ((User)subject).newsFeed.addToFeed(newTweet);
+            // TODO Update View
+        }
     }
 }

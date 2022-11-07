@@ -1,12 +1,14 @@
 package com.rakkiics3560.minitwitter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Feed {
-     // maybe using PriorityQueue might be better?
     Map<Integer, Tweet> tweetMap;
 
     public Feed() {
@@ -29,12 +31,11 @@ public class Feed {
     }
 
     /**
-     * 
-     * @param f1
-     * @param f2
+     * Merges current feed with another given feed.
+     * @param feed Given feed to merge with this.tweetMap
      */
-    public void mergeFeed(Feed f1, Feed f2) {
-        tweetMap = Stream.of(f1.getTweetMap(), f2.getTweetMap())
+    public void mergeFeed(Feed feed) {
+        this.tweetMap = Stream.of(this.tweetMap, feed.getTweetMap())
             .flatMap(map -> map.entrySet().stream())
             .collect(Collectors.toMap(
                 Map.Entry::getKey, 
@@ -46,6 +47,36 @@ public class Feed {
 
     public Map<Integer, Tweet> getTweetMap() {
         return tweetMap;
+    }
+
+    /**
+     * Takes the tweet map in feed and returns a sorted tweet list.
+     * @return List of tweets in reverse chronological order.
+     */
+    public List<Tweet> getRevChronoTweetList() {
+        List<Tweet> tweetList = new ArrayList<>();
+        PriorityQueue<Map.Entry<Integer, Tweet>> maxHeap = 
+                new PriorityQueue<>(
+            (a, b) -> b.getKey() - a.getKey()
+        );
+
+        for (Map.Entry<Integer, Tweet> entry : tweetMap.entrySet()) {
+            maxHeap.offer(entry);
+        }
+
+        while (!maxHeap.isEmpty()) {
+            tweetList.add(maxHeap.poll().getValue());
+        }
+
+        return tweetList;
+    }
+
+    public void removeUnfollowedUser(User user) {
+        for (Map.Entry<Integer, Tweet> entry : tweetMap.entrySet()) {
+            if (entry.getValue().getAuthor() == user) {
+                tweetMap.remove(entry.getKey());
+            }
+        }
     }
 
     // helper methods involving users and visitors/observers

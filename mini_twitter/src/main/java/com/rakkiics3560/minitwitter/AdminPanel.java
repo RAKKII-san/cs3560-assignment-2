@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.WindowConstants;
 
@@ -30,6 +31,8 @@ public class AdminPanel extends javax.swing.JFrame {
     protected static List<User> users;
     protected static List<Group> groups;
 
+    private DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+
     private JTree tree;
 
     private static JFrame frame;
@@ -41,7 +44,7 @@ public class AdminPanel extends javax.swing.JFrame {
             users = new ArrayList<>();
             groups = new ArrayList<>();
             tree = new JTree();
-            
+
             groups.add(new Group("Root"));
             initComponents();
         }
@@ -133,6 +136,8 @@ public class AdminPanel extends javax.swing.JFrame {
     // Variables declaration               
     private JButton countUsersButton;
     private JButton countGroupsButton;
+    private JButton countTweetsButton;
+    private JButton percentPositiveButton;
     private JButton addUserButton;
     private JButton addGroupButton;
 

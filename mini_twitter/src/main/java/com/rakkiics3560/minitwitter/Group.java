@@ -48,8 +48,7 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
 
     @Override
     public void accept() {
-        // TODO Auto-generated method stub
-        // Visitors?
+        // TODO Visitors?
         
     }
     @Override
