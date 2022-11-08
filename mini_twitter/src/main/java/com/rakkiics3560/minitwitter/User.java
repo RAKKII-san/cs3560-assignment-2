@@ -18,20 +18,9 @@ public class User extends Subject implements Observer, SysEntry {
     private List<User> followersList;
     private List<User> followingList;
 
-    /** 
-     * group list allows for future extending for a single user
-     * being in multiple groups instead of a single group
-     * ...think how twitter allows a user to be in multiple lists...
-     * so using a boolean to represent whether the user
-     * is in a group or not isn't a good idea
-     * but for the assignment's sake
-     * a single user can only be in one group
-     */
-    private List<Group> groupList;
+    private String groupName;
     private Feed personalFeed;
     private Feed newsFeed;
-
-    // TODO something something tree node jtree
 
     public User(String name) {
         userId = name;
@@ -40,6 +29,8 @@ public class User extends Subject implements Observer, SysEntry {
         observers = new ArrayList<>();
         personalFeed = new Feed();
         newsFeed = new Feed();
+        setAllowsChildren(false);
+        groupName = "Root";
     }
 
     public void followUser(User user) {
@@ -66,8 +57,8 @@ public class User extends Subject implements Observer, SysEntry {
         return followingList;
     }
 
-    public List<Group> getGroupList() {
-        return groupList;
+    public String getGroup() {
+        return groupName;
     }
 
     public Feed getPersonalFeed() {
@@ -76,6 +67,10 @@ public class User extends Subject implements Observer, SysEntry {
 
     public Feed getNewsFeed() {
         return newsFeed;
+    }
+
+    public boolean inGroup() {
+        return groupName != "Root";
     }
 
     @Override
@@ -115,9 +110,13 @@ public class User extends Subject implements Observer, SysEntry {
     public void update(Subject subject) {
         if (subject instanceof User) {
             Tweet newTweet = 
-                    this.newsFeed.getRevChronoTweetList().get(0);
-            ((User)subject).newsFeed.addToFeed(newTweet);
+                ((User)subject).newsFeed.getRevChronoTweetList().get(0);
+            this.newsFeed.addToFeed(newTweet);
             // TODO Update View
         }
+    }
+
+    public String toString() {
+        return userId;
     }
 }

@@ -15,8 +15,10 @@ public class UserView {
     // TODO List View for News Feed
 
     public UserView(User user) {
-
+        
     }
 
+    private void initComponents() {
 
+    }
 }

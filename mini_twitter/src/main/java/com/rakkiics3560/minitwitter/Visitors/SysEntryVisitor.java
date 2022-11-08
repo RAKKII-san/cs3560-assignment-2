@@ -6,12 +6,6 @@ import com.rakkiics3560.minitwitter.User;
 /** 
  * 
  */
-public class SysEntryVisitor implements Visitor {
-
-    @Override
-    public void visit(User user) {
-        // TODO Auto-generated method stub
-        
-    }
-    
+public interface SysEntryVisitor extends Visitor {
+    public void visit();
 }

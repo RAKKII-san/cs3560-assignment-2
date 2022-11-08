@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
@@ -27,8 +28,7 @@ import javax.swing.event.TreeSelectionListener;
  * Entrance to the program.
  * @author Rakkii
  */
-public class AdminPanel extends JFrame 
-                        implements TreeSelectionListener {
+public class AdminPanel extends JFrame {
     // Variables declaration               
     private static AdminPanel adminInstance;
 
@@ -130,7 +130,7 @@ public class AdminPanel extends JFrame
 
         openUserViewButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                
+                // TODO after making UserView, implement this
             }
         });
     }
@@ -165,22 +165,17 @@ public class AdminPanel extends JFrame
     }
 
     private void setTree() {
-        root = new DefaultMutableTreeNode("Root", true);
+        Group rootGroup = new Group("Root");
+        groups.put("Root", rootGroup);
+        root = new DefaultMutableTreeNode(rootGroup);
         tree = new JTree(root);
         tree.getSelectionModel().setSelectionMode
             (TreeSelectionModel.SINGLE_TREE_SELECTION);
         
         treeScrollPane = new JScrollPane(tree);
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
-        });
-        add(tree);
-        tree.setBounds(20,20,365,520);
-        groups.put("Root", new Group("Root"));
+        add(treeScrollPane);
+        treeScrollPane.setBounds(20,20,365,520);
+        
     }
 
     private void setTextArea() {
@@ -209,8 +204,27 @@ public class AdminPanel extends JFrame
     // create user
     private void addUser(String name) {
         if (!users.containsKey(name)) {
-            users.put(name, new User(name));
-            // TODO add node to tree
+            User newUser = new User(name);
+            users.put(name, newUser);
+            // add node to tree
+            DefaultMutableTreeNode node =
+                (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+            // if no location selected
+            if (node == null) {
+                root.add(newUser);
+            } 
+            else {
+                if (node.getAllowsChildren()) { // Groups allow children
+                    node.add(newUser);
+                } else { // Users do not allow children
+                    DefaultMutableTreeNode parent =
+                        (DefaultMutableTreeNode)node.getParent();
+                    parent.add(newUser);
+                }
+            }
+            // update tree view
+            ((DefaultTreeModel) tree.getModel()).
+                nodesWereInserted(root, new int[]{root.getChildCount() - 1});
         } else {
             errorMessage = "Username already exists.";
             JOptionPane.showMessageDialog(
@@ -232,20 +246,5 @@ public class AdminPanel extends JFrame
                 "Group Name Error", JOptionPane.ERROR_MESSAGE
             );
         }
-    }
-
-    /* add user to group
-    private void addUserToGroup(User user, String groupName) {
-        if (groups.containsKey(groupName)) {
-
-        } else {
-            // TODO bring up alert panel saying that group name does not exist
-        }
-    }*/
-
-    @Override
-    public void valueChanged(TreeSelectionEvent e) {
-        // TODO Auto-generated method stub
-        
     }
 }

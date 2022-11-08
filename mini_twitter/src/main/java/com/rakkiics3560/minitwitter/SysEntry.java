@@ -10,5 +10,5 @@ package com.rakkiics3560.minitwitter;
  * @author Rakkii
  */
 public interface SysEntry extends Visitable {
-    public String getDisplayName();
+    public String toString();
 }

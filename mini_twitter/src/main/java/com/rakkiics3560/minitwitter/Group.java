@@ -27,11 +27,12 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
         for (User user : users) {
             userList.add(user);
         }
+        setAllowsChildren(true);
         groupName = name;
     }
 
     public void addMember(User user) {
-        if (!userList.contains(user) && user.getGroupList().size() == 0) {
+        if (!userList.contains(user) && !user.inGroup()) {
             userList.add(user);
         }
     }
@@ -53,9 +54,8 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
         // TODO Visitors?
         
     }
-    @Override
-    public String getDisplayName() {
+
+    public String toString() {
         return groupName;
     }
-
 }
