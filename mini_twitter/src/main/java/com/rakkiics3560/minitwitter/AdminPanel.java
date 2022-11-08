@@ -1,121 +1,203 @@
 package com.rakkiics3560.minitwitter;
 
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.GroupLayout;
+
+import java.util.regex.Pattern;
+import java.util.HashMap;
+
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.SwingConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeSelectionModel;
 import javax.swing.WindowConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 
 /**
- * Views all users and groups in a tree view, as well as
- * 
+ * Views all users and groups in a tree view,
+ * adds users and groups, counts number of users, groups, and tweets,
+ * opens user views, and calculates percentage of tweets 
+ * with positive words.
+ * Entrance to the program.
  * @author Rakkii
  */
-public class AdminPanel extends javax.swing.JFrame {
-    // Static instance
-    private static AdminPanel adminInstance = new AdminPanel();
+public class AdminPanel extends JFrame 
+                        implements TreeSelectionListener {
+    // Variables declaration               
+    private static AdminPanel adminInstance;
 
-    protected static List<User> users;
-    protected static List<Group> groups;
+    protected static HashMap<String, User> users;
+    protected static HashMap<String, Group> groups;
 
-    private DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+    private DefaultMutableTreeNode root;
 
+    private JFrame popUpFrame;
     private JTree tree;
+    private JScrollPane treeScrollPane;
+    private JTextField addUserTextArea;
+    private JTextField addGroupTextArea;
 
-    private static JFrame frame;
+    private JButton addUserButton;
+    private JButton addGroupButton;
+    private JButton countGroupsButton;
+    private JButton countTweetsButton;
+    private JButton countUsersButton;
+    private JButton openUserViewButton;
+    private JButton percentPositiveButton;
+
+    private String newUserName;
+    private String newGroupName;
+    private String errorMessage;
+
+    private static Pattern alphPattern = Pattern.compile(
+        "^[a-zA-Z0-9]*$"
+    );
+
+    private static final int SCREEN_WIDTH = 800;
+    private static final int SCREEN_HEIGHT = 600;
+
+    // End of variables declaration    
 
     // Private constructor
     private AdminPanel() {
         if (adminInstance == null) {
             adminInstance = this;
-            users = new ArrayList<>();
-            groups = new ArrayList<>();
-            tree = new JTree();
-
-            groups.add(new Group("Root"));
+            users = new HashMap<>();
+            groups = new HashMap<>();
             initComponents();
         }
     }
     
     /** Builds UI for the Admin Panel. */
     private void initComponents() {
-        countUsersButton = new JButton();
-        countGroupsButton = new JButton();
-        
+        setButtons();
+        setTree();
+        setTextArea();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mini Twitter Admin Panel");
+        setLayout(null);
+        setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        setResizable(false);
+        setVisible(true);
         
-        countUsersButton.setText("Count Users");
-        countUsersButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                JOptionPane.showMessageDialog(frame, "Total Number of Users: " + users.size());
+        // Button function on click
+        countUsersButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(
+                popUpFrame, "Total Number of Users: " + users.size()
+            );
+        });
+
+        countGroupsButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(
+                popUpFrame, "Total Number of Groups: " + groups.size()
+            );
+        });
+
+
+        addUserButton.addActionListener(e -> {
+            newUserName = addUserTextArea.getText();
+            if (isAlphaNumeric(newUserName)) {
+                addUser(newUserName);
+            } else {
+                errorMessage = "Username must be a non-empty, "
+                    + "alphanumeric string.";
+                JOptionPane.showMessageDialog(
+                    new JFrame(), errorMessage, 
+                    "Username Error", JOptionPane.ERROR_MESSAGE
+                );
             }
         });
 
-        countGroupsButton.setText("Count Groups");
-        countGroupsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                JOptionPane.showMessageDialog(frame, "Total Number of Groups: " + groups.size());
+        addGroupButton.addActionListener(e -> {
+            newGroupName = addGroupTextArea.getText();
+            if (isAlphaNumeric(newGroupName)) {
+                addGroup(newGroupName);
+            } else {
+                errorMessage = "Group name must be a non-empty, "
+                    + "alphanumeric string.";
+                JOptionPane.showMessageDialog(
+                    new JFrame(), errorMessage, 
+                    "Group Name Error", JOptionPane.ERROR_MESSAGE
+                );
             }
         });
 
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(
-                    GroupLayout.Alignment.LEADING
-                )
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(countUsersButton)
-                        .addComponent(countGroupsButton)
-                    )
-                )
-                .addContainerGap()
-            )
-        );
-
-        layout.linkSize(
-            SwingConstants.HORIZONTAL, 
-            new Component[] {countUsersButton, countGroupsButton}
-        );
-
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(
-                    GroupLayout.Alignment.LEADING
-                )
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(countUsersButton)
-                    )
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(countGroupsButton)
-                    )
-                )
-                .addContainerGap()
-            )
-        );
-
-        pack();
+        openUserViewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                
+            }
+        });
     }
     
+    /** 
+     * Places buttons into UI
+     */
+    private void setButtons() {
+        addUserButton = new JButton("Add User");
+        addGroupButton = new JButton("Add Group");
+        countUsersButton = new JButton("Count Users");
+        countGroupsButton = new JButton("Count Groups");
+        countTweetsButton = new JButton("Count Tweets");
+        openUserViewButton = new JButton("Open User");
+        percentPositiveButton = new JButton("Show Positive %");
+
+        add(addUserButton);
+        add(addGroupButton);
+        add(openUserViewButton);
+        add(countUsersButton);
+        add(countGroupsButton);
+        add(countTweetsButton);
+        add(percentPositiveButton);
+
+        addUserButton.setBounds(665, 20, 100, 60);
+        addGroupButton.setBounds(665, 100, 100, 60);
+        openUserViewButton.setBounds(405, 180, 360, 60);
+        countUsersButton.setBounds(405, 400, 170, 60);
+        countGroupsButton.setBounds(595, 400, 170, 60);
+        countTweetsButton.setBounds(405, 480, 170, 60);
+        percentPositiveButton.setBounds(595, 480, 170, 60);
+    }
+
+    private void setTree() {
+        root = new DefaultMutableTreeNode("Root", true);
+        tree = new JTree(root);
+        tree.getSelectionModel().setSelectionMode
+            (TreeSelectionModel.SINGLE_TREE_SELECTION);
+        
+        treeScrollPane = new JScrollPane(tree);
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
+        add(tree);
+        tree.setBounds(20,20,365,520);
+        groups.put("Root", new Group("Root"));
+    }
+
+    private void setTextArea() {
+        addUserTextArea = new JTextField();
+        addGroupTextArea = new JTextField();
+
+        add(addUserTextArea);
+        add(addGroupTextArea);
+
+        addUserTextArea.setBounds(405,20,240,60);
+        addGroupTextArea.setBounds(405,100,240,60);
+    }
+
+    private boolean isAlphaNumeric(String s) {
+        return s.length() > 0 && alphPattern.matcher(s).find();
+    }
+
     // Static getter
     public static AdminPanel getAdmin() {
         if (adminInstance == null) {
@@ -124,22 +206,46 @@ public class AdminPanel extends javax.swing.JFrame {
         return adminInstance;
     }
     
-    // create users
-    public void addUser() {
+    // create user
+    private void addUser(String name) {
+        if (!users.containsKey(name)) {
+            users.put(name, new User(name));
+            // TODO add node to tree
+        } else {
+            errorMessage = "Username already exists.";
+            JOptionPane.showMessageDialog(
+                new JFrame(), errorMessage, 
+                "Username Error", JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    // create user groups
+    private void addGroup(String name) {
+        if (!groups.containsKey(name)) {
+            groups.put(name, new Group(name));
+            // TODO add node to tree
+        } else {
+            errorMessage = "Group name already exists.";
+            JOptionPane.showMessageDialog(
+                new JFrame(), errorMessage, 
+                "Group Name Error", JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    /* add user to group
+    private void addUserToGroup(User user, String groupName) {
+        if (groups.containsKey(groupName)) {
+
+        } else {
+            // TODO bring up alert panel saying that group name does not exist
+        }
+    }*/
+
+    @Override
+    public void valueChanged(TreeSelectionEvent e) {
+        // TODO Auto-generated method stub
         
     }
-    // create user groups
-        // also might need a button for this?
-    // make root group
-        // fine to hardcode??? idk
-
-    // Variables declaration               
-    private JButton countUsersButton;
-    private JButton countGroupsButton;
-    private JButton countTweetsButton;
-    private JButton percentPositiveButton;
-    private JButton addUserButton;
-    private JButton addGroupButton;
-
-    // End of variables declaration       
 }

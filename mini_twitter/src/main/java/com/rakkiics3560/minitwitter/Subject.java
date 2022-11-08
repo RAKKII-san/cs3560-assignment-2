@@ -4,7 +4,7 @@ import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- *
+ * Observer class structure.
  * @author Rakkii
  */
 public abstract class Subject extends DefaultMutableTreeNode {

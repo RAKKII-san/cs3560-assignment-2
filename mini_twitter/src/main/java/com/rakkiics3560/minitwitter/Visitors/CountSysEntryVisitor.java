@@ -1,5 +1,13 @@
-package com.rakkiics3560.minitwitter.Visitors;
+package com.rakkiics3560.minitwitter.visitors;
 
-public class CountSysEntryVisitor {
+import com.rakkiics3560.minitwitter.User;
+
+public class CountSysEntryVisitor implements Visitor {
+
+    @Override
+    public void visit(User user) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

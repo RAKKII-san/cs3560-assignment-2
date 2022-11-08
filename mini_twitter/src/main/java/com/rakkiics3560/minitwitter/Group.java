@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.rakkiics3560.minitwitter.visitors.Visitor;
+
 /**
  *
  * @author Rakkii
@@ -47,7 +49,7 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
     }
 
     @Override
-    public void accept() {
+    public void accept(Visitor vis) {
         // TODO Visitors?
         
     }

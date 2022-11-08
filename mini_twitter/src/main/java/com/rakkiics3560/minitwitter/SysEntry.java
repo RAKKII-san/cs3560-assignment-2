@@ -3,8 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.rakkiics3560.minitwitter;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * User/Group entries in the Mini Twitter system.
@@ -13,5 +11,4 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public interface SysEntry extends Visitable {
     public String getDisplayName();
-    // TODO something something tree node jtree
 }

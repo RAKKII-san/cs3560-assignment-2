@@ -4,10 +4,12 @@
  */
 package com.rakkiics3560.minitwitter;
 
+import com.rakkiics3560.minitwitter.visitors.Visitor;
+
 /**
  *
  * @author Rakkii
  */
 public interface Visitable {
-    public void accept();
+    public void accept(Visitor vis);
 }

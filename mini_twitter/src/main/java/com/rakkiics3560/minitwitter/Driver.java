@@ -1,4 +1,3 @@
-
 package com.rakkiics3560.minitwitter;
 
 /**

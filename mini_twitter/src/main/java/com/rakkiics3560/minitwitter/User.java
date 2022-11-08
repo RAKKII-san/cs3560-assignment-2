@@ -7,6 +7,8 @@ package com.rakkiics3560.minitwitter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rakkiics3560.minitwitter.visitors.Visitor;
+
 /**
  * Basic functions checklist #2, #4, #5
  * @author RAKKII
@@ -77,7 +79,7 @@ public class User extends Subject implements Observer, SysEntry {
     }
 
     @Override
-    public void accept() {
+    public void accept(Visitor vis) {
         // TODO Accepts Visitors
         
     }

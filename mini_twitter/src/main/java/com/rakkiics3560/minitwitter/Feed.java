@@ -78,6 +78,4 @@ public class Feed {
             }
         }
     }
-
-    // helper methods involving users and visitors/observers
 }
