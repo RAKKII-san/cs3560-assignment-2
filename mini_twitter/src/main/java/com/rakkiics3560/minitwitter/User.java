@@ -15,6 +15,7 @@ import com.rakkiics3560.minitwitter.visitors.Visitor;
  */
 public class User extends Subject implements Observer, SysEntry {
     private String userId;
+    private final String ICON_FILENAME = "/icons/userIcon.png";
     private List<User> followersList;
     private List<User> followingList;
 
@@ -113,5 +114,10 @@ public class User extends Subject implements Observer, SysEntry {
 
     public String toString() {
         return userId;
+    }
+
+    @Override
+    public String getIconString() {
+        return ICON_FILENAME;
     }
 }

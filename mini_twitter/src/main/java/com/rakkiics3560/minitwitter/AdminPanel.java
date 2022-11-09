@@ -1,24 +1,26 @@
 package com.rakkiics3560.minitwitter;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import java.util.regex.Pattern;
 import java.util.HashMap;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.WindowConstants;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-
 
 /**
  * Views all users and groups in a tree view,
@@ -54,6 +56,7 @@ public class AdminPanel extends JFrame {
     private String newUserName;
     private String newGroupName;
     private String errorMessage;
+
 
     private static Pattern alphPattern = Pattern.compile(
         "^[a-zA-Z0-9]*$"
@@ -171,7 +174,7 @@ public class AdminPanel extends JFrame {
         tree = new JTree(root);
         tree.getSelectionModel().setSelectionMode
             (TreeSelectionModel.SINGLE_TREE_SELECTION);
-        
+        setCustomIcon();
         treeScrollPane = new JScrollPane(tree);
         add(treeScrollPane);
         treeScrollPane.setBounds(20,20,365,520);
@@ -209,12 +212,13 @@ public class AdminPanel extends JFrame {
             // add node to tree
             DefaultMutableTreeNode node =
                 (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+
             // if no location selected
             if (node == null) {
                 root.add(newUser);
             } 
             else {
-                if (node.getAllowsChildren()) { // Groups allow children
+                if (node.getUserObject() instanceof Group) { // Groups allow children
                     node.add(newUser);
                 } else { // Users do not allow children
                     DefaultMutableTreeNode parent =
@@ -222,9 +226,7 @@ public class AdminPanel extends JFrame {
                     parent.add(newUser);
                 }
             }
-            // update tree view
-            ((DefaultTreeModel) tree.getModel()).
-                nodesWereInserted(root, new int[]{root.getChildCount() - 1});
+            updateTree();
         } else {
             errorMessage = "Username already exists.";
             JOptionPane.showMessageDialog(
@@ -237,8 +239,25 @@ public class AdminPanel extends JFrame {
     // create user groups
     private void addGroup(String name) {
         if (!groups.containsKey(name)) {
-            groups.put(name, new Group(name));
-            // TODO add node to tree
+            Group newGroup = new Group(name);
+            groups.put(name, newGroup);
+            // add node to tree
+            DefaultMutableTreeNode node =
+                (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+            // if no location selected
+            if (node == null) {
+                root.add(newGroup);
+            } 
+            else {
+                if (node.getUserObject() instanceof Group) { // Groups allow children
+                    node.add(newGroup);
+                } else { // Users do not allow children
+                    DefaultMutableTreeNode parent =
+                        (DefaultMutableTreeNode)node.getParent();
+                    parent.add(newGroup);
+                }
+            }
+            updateTree(); 
         } else {
             errorMessage = "Group name already exists.";
             JOptionPane.showMessageDialog(
@@ -246,5 +265,47 @@ public class AdminPanel extends JFrame {
                 "Group Name Error", JOptionPane.ERROR_MESSAGE
             );
         }
+    }
+
+    private void updateTree() {
+        ((DefaultTreeModel) tree.getModel()).
+                nodesWereInserted(root, new int[]{root.getChildCount() - 1});
+        setCustomIcon();
+        ((DefaultTreeModel)tree.getModel()).reload();
+    }
+
+    private void setCustomIcon() {
+        tree.setCellRenderer(new DefaultTreeCellRenderer() {
+            private Icon groupIcon = UIManager.getIcon("FileView.directoryIcon");
+            private Icon userIcon = UIManager.getIcon("FileView.fileIcon");
+
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree,
+                    Object value, boolean selected, boolean expanded,
+                    boolean isLeaf, int row, boolean focused) {
+                Component c = super.getTreeCellRendererComponent(
+                    tree, value, selected, expanded, isLeaf, row, focused
+                );
+
+                DefaultMutableTreeNode nodeValue = (DefaultMutableTreeNode) value;
+                SysEntry userObject = (SysEntry) nodeValue.getUserObject();
+
+                if (userObject instanceof Group) {
+                    setIcon(groupIcon);
+                } else if (userObject instanceof User) {
+                    setIcon(userIcon);
+                }
+
+                return c;
+            }
+        });
+    }
+
+    public HashMap<String, User> getUsers() {
+        return users;
+    }
+
+    public HashMap<String, Group> getGroups() {
+        return groups;
     }
 }

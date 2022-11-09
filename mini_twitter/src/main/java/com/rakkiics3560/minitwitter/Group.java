@@ -16,14 +16,14 @@ import com.rakkiics3560.minitwitter.visitors.Visitor;
  */
 public class Group extends DefaultMutableTreeNode implements SysEntry {
     private String groupName;
+    private final String ICON_FILENAME = "/icons/groupIcon.png";
     private List<User> userList;
-    private List<Group> groupList; // recursive
+
 
     // Established group name included in instantiation
     // Group can be instantiated by any number of users
     public Group(String name, User... users) {
         userList = new ArrayList<>();
-        groupList = new ArrayList<>();
         for (User user : users) {
             userList.add(user);
         }
@@ -45,10 +45,6 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
         return userList;
     }
 
-    public List<Group> getGroupList() {
-        return groupList;
-    }
-
     @Override
     public void accept(Visitor vis) {
         // TODO Visitors?
@@ -57,5 +53,10 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
 
     public String toString() {
         return groupName;
+    }
+
+    @Override
+    public String getIconString() {
+        return ICON_FILENAME;
     }
 }
