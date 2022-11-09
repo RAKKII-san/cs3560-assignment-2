@@ -79,11 +79,6 @@ public class User extends Subject implements Observer, SysEntry {
         
     }
 
-    @Override
-    public String getDisplayName() {
-        return userId;
-    }
-
     /**
      * Creates a Tweet and posts it to current user's personal feed
      * and news feed, as well as updating current user's followers'
