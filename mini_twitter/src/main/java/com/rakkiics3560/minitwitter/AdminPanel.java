@@ -1,24 +1,19 @@
 package com.rakkiics3560.minitwitter;
 
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import java.util.regex.Pattern;
 import java.util.HashMap;
 
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.WindowConstants;
 
@@ -56,7 +51,6 @@ public class AdminPanel extends JFrame {
     private String newUserName;
     private String newGroupName;
     private String errorMessage;
-
 
     private static Pattern alphPattern = Pattern.compile(
         "^[a-zA-Z0-9]*$"
@@ -174,7 +168,6 @@ public class AdminPanel extends JFrame {
         tree = new JTree(root);
         tree.getSelectionModel().setSelectionMode
             (TreeSelectionModel.SINGLE_TREE_SELECTION);
-        setCustomIcon();
         treeScrollPane = new JScrollPane(tree);
         add(treeScrollPane);
         treeScrollPane.setBounds(20,20,365,520);
@@ -206,6 +199,7 @@ public class AdminPanel extends JFrame {
     
     // create user
     private void addUser(String name) {
+        name = name.toLowerCase();
         if (!users.containsKey(name)) {
             User newUser = new User(name);
             users.put(name, newUser);
@@ -218,7 +212,7 @@ public class AdminPanel extends JFrame {
                 root.add(newUser);
             } 
             else {
-                if (node.getUserObject() instanceof Group) { // Groups allow children
+                if (node.getAllowsChildren()) { // Groups allow children
                     node.add(newUser);
                 } else { // Users do not allow children
                     DefaultMutableTreeNode parent =
@@ -238,6 +232,7 @@ public class AdminPanel extends JFrame {
 
     // create user groups
     private void addGroup(String name) {
+        name = name.toUpperCase();
         if (!groups.containsKey(name)) {
             Group newGroup = new Group(name);
             groups.put(name, newGroup);
@@ -249,7 +244,7 @@ public class AdminPanel extends JFrame {
                 root.add(newGroup);
             } 
             else {
-                if (node.getUserObject() instanceof Group) { // Groups allow children
+                if (node.getAllowsChildren()) { // Groups allow children
                     node.add(newGroup);
                 } else { // Users do not allow children
                     DefaultMutableTreeNode parent =
@@ -270,35 +265,6 @@ public class AdminPanel extends JFrame {
     private void updateTree() {
         ((DefaultTreeModel) tree.getModel()).
                 nodesWereInserted(root, new int[]{root.getChildCount() - 1});
-        setCustomIcon();
-        ((DefaultTreeModel)tree.getModel()).reload();
-    }
-
-    private void setCustomIcon() {
-        tree.setCellRenderer(new DefaultTreeCellRenderer() {
-            private Icon groupIcon = UIManager.getIcon("FileView.directoryIcon");
-            private Icon userIcon = UIManager.getIcon("FileView.fileIcon");
-
-            @Override
-            public Component getTreeCellRendererComponent(JTree tree,
-                    Object value, boolean selected, boolean expanded,
-                    boolean isLeaf, int row, boolean focused) {
-                Component c = super.getTreeCellRendererComponent(
-                    tree, value, selected, expanded, isLeaf, row, focused
-                );
-
-                DefaultMutableTreeNode nodeValue = (DefaultMutableTreeNode) value;
-                SysEntry userObject = (SysEntry) nodeValue.getUserObject();
-
-                if (userObject instanceof Group) {
-                    setIcon(groupIcon);
-                } else if (userObject instanceof User) {
-                    setIcon(userIcon);
-                }
-
-                return c;
-            }
-        });
     }
 
     public HashMap<String, User> getUsers() {

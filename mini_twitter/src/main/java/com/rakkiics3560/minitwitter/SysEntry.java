@@ -11,5 +11,4 @@ package com.rakkiics3560.minitwitter;
  */
 public interface SysEntry extends Visitable {
     public String toString();
-    public String getIconString();
 }
