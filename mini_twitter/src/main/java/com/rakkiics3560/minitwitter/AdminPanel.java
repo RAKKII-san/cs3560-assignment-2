@@ -265,6 +265,13 @@ public class AdminPanel extends JFrame {
     private void updateTree() {
         ((DefaultTreeModel) tree.getModel()).
                 nodesWereInserted(root, new int[]{root.getChildCount() - 1});
+        expandTree();
+    }
+
+    private void expandTree() {
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            tree.expandRow(i);
+        }
     }
 
     public HashMap<String, User> getUsers() {
