@@ -22,6 +22,8 @@ public class User extends Subject implements Observer, SysEntry {
     private Feed personalFeed;
     private Feed newsFeed;
 
+    private UserView userView;
+
     public User(String name) {
         userId = name;
         followersList = new ArrayList<>();
@@ -31,6 +33,7 @@ public class User extends Subject implements Observer, SysEntry {
         newsFeed = new Feed();
         setAllowsChildren(false);
         groupName = "Root";
+        userView = new UserView(this);
     }
 
     public void followUser(User user) {
@@ -94,8 +97,6 @@ public class User extends Subject implements Observer, SysEntry {
          * it can also be added there
          */
         newsFeed.addToFeed(newTweet);
-
-        notifyObservers();
     }
 
     /** 
@@ -108,6 +109,7 @@ public class User extends Subject implements Observer, SysEntry {
                 ((User)subject).newsFeed.getRevChronoTweetList().get(0);
             this.newsFeed.addToFeed(newTweet);
             // TODO Update View
+            
         }
     }
 

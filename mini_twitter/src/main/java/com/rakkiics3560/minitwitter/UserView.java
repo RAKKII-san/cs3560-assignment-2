@@ -33,6 +33,8 @@ public class UserView extends JFrame {
     private String tweetContent;
     private String errorMessage;
 
+    private boolean userViewStarted = false;
+
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 600;
 
@@ -50,7 +52,6 @@ public class UserView extends JFrame {
         setLayout(null);
         setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         setResizable(false);
-        setVisible(true);
 
         // Button function on click
         followUserButton.addActionListener(e -> {
@@ -116,6 +117,10 @@ public class UserView extends JFrame {
         newsFeedScrollPane.setBounds(20,400,760,180);
     }
 
+    private void updateFollowers() {
+
+    }
+
     private void followUser() {
         followedUser = followUserTextArea.getText();
         HashMap<String, User> userMap 
@@ -135,5 +140,7 @@ public class UserView extends JFrame {
         if (tweetContent.length() > 0) {
             userInstance.postTweet(tweetContent);
         }
+
+        userInstance.notifyObservers();
     }
 }
