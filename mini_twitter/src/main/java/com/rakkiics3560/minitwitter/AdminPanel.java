@@ -33,6 +33,7 @@ public class AdminPanel extends JFrame {
     protected static HashMap<String, Group> groups;
 
     private DefaultMutableTreeNode root;
+    private DefaultMutableTreeNode userViewSelection;
 
     private JFrame popUpFrame;
     private JTree tree;
@@ -51,6 +52,7 @@ public class AdminPanel extends JFrame {
     private String newUserName;
     private String newGroupName;
     private String errorMessage;
+
 
     private static Pattern alphPattern = Pattern.compile(
         "^[a-zA-Z0-9]*$"
@@ -127,7 +129,21 @@ public class AdminPanel extends JFrame {
 
         openUserViewButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                // TODO after making UserView, implement this
+                userViewSelection = 
+                    (DefaultMutableTreeNode)tree
+                        .getLastSelectedPathComponent();
+                if (userViewSelection != null 
+                        && !userViewSelection.getAllowsChildren()) {
+                    ((User)userViewSelection).getUserView()
+                        .setVisible(true);
+                } else {
+                    errorMessage = "Invalid selection.\n"
+                    + "Please select a user.";
+                    JOptionPane.showMessageDialog(
+                        new JFrame(), errorMessage, 
+                        "User View Error", JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
         });
     }

@@ -14,6 +14,7 @@ public class Tweet implements Message {
         tweetId = idCounter;
         author = user;
         message = text;
+        idCounter++;
     }
 
     public int getTweetId() {

@@ -23,8 +23,8 @@ public class UserView extends JFrame {
     private JList<String> followingList;
     private JList<String> newsFeedList;
 
-    private DefaultListModel<String> followingListText;
-    private DefaultListModel<String> newsFeedText;
+    private DefaultListModel<String> followingListModel;
+    private DefaultListModel<String> newsFeedModel;
 
     private JScrollPane followingScrollPane;
     private JScrollPane newsFeedScrollPane;
@@ -32,8 +32,6 @@ public class UserView extends JFrame {
     private String followedUser;
     private String tweetContent;
     private String errorMessage;
-
-    private boolean userViewStarted = false;
 
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 600;
@@ -47,11 +45,12 @@ public class UserView extends JFrame {
         setButtons();
         setTextAreas();
         setLists();
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("User View - " + userInstance.toString());
         setLayout(null);
         setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         setResizable(false);
+        followingScrollPane.setBounds(20,100,750,180);
+        newsFeedScrollPane.setBounds(20,380,750,160);
 
         // Button function on click
         followUserButton.addActionListener(e -> {
@@ -70,8 +69,8 @@ public class UserView extends JFrame {
         add(followUserButton);
         add(postTweetButton);
 
-        followUserButton.setBounds(640, 20, 140, 60);
-        postTweetButton.setBounds(720, 320, 60, 60);
+        followUserButton.setBounds(640, 20, 130, 60);
+        postTweetButton.setBounds(640, 300, 130, 60);
     }
 
     private void setTextAreas() {
@@ -82,43 +81,41 @@ public class UserView extends JFrame {
         add(tweetMessageTextArea);
 
         followUserTextArea.setBounds(20,20,600,60);
-        tweetMessageTextArea.setBounds(20,320,680,60);
+        tweetMessageTextArea.setBounds(20,300,600,60);
     }
 
     private void setLists() {
-        followingListText = new DefaultListModel<>();
+        updateFollowers();
+        updateNewsFeed();
+    }
+
+    private void updateFollowers() {
+        followingListModel = new DefaultListModel<>();
 
         for (User user : userInstance.getFollowingList()) {
-            followingListText.addElement(user.toString());
+            followingListModel.addElement(user.toString());
         }
 
-        followingList = new JList<>(followingListText);
+        followingList = new JList<>(followingListModel);
+        followingScrollPane = new JScrollPane(followingList);
+        add(followingScrollPane);
+    }
 
-        newsFeedText = new DefaultListModel<>();
+    public void updateNewsFeed() {
+        newsFeedModel = new DefaultListModel<>();
 
         for (Tweet tweet : userInstance.getNewsFeed()
-                           .getRevChronoTweetList()) {
+                .getRevChronoTweetList()) {
             StringBuilder sb = new StringBuilder();
             sb.append(tweet.getAuthor());
             sb.append(": ");
             sb.append(tweet.getMessage());
-            newsFeedText.addElement(sb.toString());
+            newsFeedModel.addElement(sb.toString());
         }
 
-        newsFeedList = new JList<>(newsFeedText);
-
-        followingScrollPane = new JScrollPane(followingList);
+        newsFeedList = new JList<>(newsFeedModel);
         newsFeedScrollPane = new JScrollPane(newsFeedList);
-
-        add(followingScrollPane);
         add(newsFeedScrollPane);
-
-        followingScrollPane.setBounds(20,100,760,180);
-        newsFeedScrollPane.setBounds(20,400,760,180);
-    }
-
-    private void updateFollowers() {
-
     }
 
     private void followUser() {
@@ -127,7 +124,8 @@ public class UserView extends JFrame {
                 = AdminPanel.getAdmin().getUsers();
         if (userMap.containsKey(followedUser)) {
             userInstance.followUser(userMap.get(followedUser));
-            // TODO Refresh following list
+            followingListModel.add(0, followedUser);
+            updateNewsFeed();
         } else {
             errorMessage = "User does not exist.";
             JOptionPane.showMessageDialog(new JFrame(),errorMessage,
@@ -139,6 +137,14 @@ public class UserView extends JFrame {
         tweetContent = tweetMessageTextArea.getText();
         if (tweetContent.length() > 0) {
             userInstance.postTweet(tweetContent);
+            /* 
+            StringBuilder sb = new StringBuilder();
+            sb.append(userInstance.toString());
+            sb.append(": ");
+            sb.append(tweetContent);
+            newsFeedModel.add(0, tweetContent);
+            */
+            updateNewsFeed();
         }
 
         userInstance.notifyObservers();

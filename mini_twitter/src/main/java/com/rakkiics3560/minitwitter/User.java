@@ -72,6 +72,10 @@ public class User extends Subject implements Observer, SysEntry {
         return newsFeed;
     }
 
+    public UserView getUserView() {
+        return userView;
+    }
+
     public boolean inGroup() {
         return groupName != "Root";
     }
@@ -108,8 +112,7 @@ public class User extends Subject implements Observer, SysEntry {
             Tweet newTweet = 
                 ((User)subject).newsFeed.getRevChronoTweetList().get(0);
             this.newsFeed.addToFeed(newTweet);
-            // TODO Update View
-            
+            this.userView.updateNewsFeed();
         }
     }
 
