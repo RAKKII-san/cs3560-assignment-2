@@ -35,7 +35,7 @@ public class User extends Subject implements Observer, SysEntry {
         followingList.add(user);
         user.getFollowersList().add(this);
         newsFeed.mergeFeed(user.getPersonalFeed());
-        this.attach(user);
+        user.attach(this);
     }
 
     // Not needed but could be helpful later
@@ -101,9 +101,9 @@ public class User extends Subject implements Observer, SysEntry {
     public void update(Subject subject) {
         if (subject instanceof User) {
             Tweet newTweet = 
-                this.getMostRecentTweet();
-            ((User)subject).getNewsFeed().addToFeed(newTweet);
-            ((User)subject).userView.updateNewsFeed();
+                ((User)subject).getMostRecentTweet();
+            this.getNewsFeed().addToFeed(newTweet);
+            this.userView.updateNewsFeed();
         }
     }
 
