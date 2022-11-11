@@ -57,7 +57,7 @@ public class UserView extends JFrame {
         setResizable(false);
         followingScrollPane.setBounds(20,100,750,180);
         newsFeedScrollPane.setBounds(20,380,750,160);
-
+        updateNewsFeed();
         // Button function on click
         followUserButton.addActionListener(e -> {
             followUser();

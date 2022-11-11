@@ -62,7 +62,7 @@ public class PositiveTweetVisitor implements Visitor {
      */
     private boolean findPositiveWords(Tweet tweet) {
         String tweetContent = tweet.getMessage();
-        String[] tokens = tweetContent.split("[.,!?:;'\"-]+\\s*");
+        String[] tokens = tweetContent.split("[ .,!?:;'\"-]+\\s*");
         for (String token : tokens) {
             if (positiveWordSet.contains(token.toLowerCase())) {
                 return true;
