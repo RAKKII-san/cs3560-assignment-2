@@ -129,6 +129,7 @@ public class UserView extends JFrame {
         }
     }
 
+    /** Follows a user and puts the user's name into a following list. */
     private void followUser() {
         followedUser = followUserTextArea.getText();
         HashMap<String, User> userMap 

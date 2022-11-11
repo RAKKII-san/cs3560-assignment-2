@@ -170,6 +170,11 @@ public class AdminPanel extends JFrame {
         });
     }
     
+    /**
+     * Calculates percentage of tweets with positive words
+     * using Visitor pattern.
+     * @return % of tweets with positive words
+     */
     private double calculatePositivePercent() {
         Collection<User> userSet = users.values();
         Collection<Tweet> tweetSet = new HashSet<Tweet>();
@@ -270,20 +275,33 @@ public class AdminPanel extends JFrame {
         addGroupTextArea.setBounds(405,100,240,60);
     }
 
+    /** 
+     * Sets icons for users and groups. 
+     */
     private void setCustomIcons() {
         tree.setCellRenderer(new DefaultTreeCellRenderer() {
 			@Override
-			public Component getTreeCellRendererComponent(JTree tr, Object value, boolean isSelected, boolean expanded, boolean isLeaf, int row, boolean hasFocus) {
-				Component result = super.getTreeCellRendererComponent(tr, value, isSelected, expanded, isLeaf, row, hasFocus);
+			public Component getTreeCellRendererComponent(
+                JTree tr, Object value, 
+                boolean isSelected, boolean expanded, 
+                boolean isLeaf, int row, boolean hasFocus
+            ) {
+				Component result = super.getTreeCellRendererComponent(
+                    tr, value, isSelected, 
+                    expanded, isLeaf, row, hasFocus);
 
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 
 				if (node instanceof Group) {
-					this.setIcon(UIManager.getIcon("FileView.directoryIcon"));
+					this.setIcon(UIManager.getIcon(
+                        "FileView.directoryIcon"
+                    ));
 				}
 
 				if (node instanceof User) {
-					this.setIcon(UIManager.getIcon("FileView.fileIcon"));
+					this.setIcon(UIManager.getIcon(
+                        "FileView.fileIcon"
+                    ));
 				}
 
 				return result;
@@ -291,6 +309,11 @@ public class AdminPanel extends JFrame {
 		});
     }
 
+    /**
+     * Checks string if it only contains alphanumeric characters.
+     * @param s String to be tested.
+     * @return if string is not empty and only contains alphanumeric chars.
+     */
     private boolean isAlphaNumeric(String s) {
         return s.length() > 0 && alphPattern.matcher(s).find();
     }
@@ -303,7 +326,7 @@ public class AdminPanel extends JFrame {
         return adminInstance;
     }
     
-    /** Create user */
+    /** Create user. */
     private void addUser(String name) {
         if (!users.containsKey(name)) {
             User newUser = new User(name);
