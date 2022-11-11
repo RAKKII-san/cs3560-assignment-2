@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import com.rakkiics3560.minitwitter.visitors.Visitor;
-
 /**
- *
+ * Sets up Groups and stores the User members of said Group.
  * @author Rakkii
  */
 public class Group extends DefaultMutableTreeNode implements SysEntry {
@@ -47,12 +45,6 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
 
     public List<Group> getGroupList() {
         return groupList;
-    }
-
-    @Override
-    public void accept(Visitor vis) {
-        // TODO Visitors?
-        
     }
 
     public String toString() {

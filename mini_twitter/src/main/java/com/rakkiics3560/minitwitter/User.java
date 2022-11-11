@@ -1,16 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.rakkiics3560.minitwitter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rakkiics3560.minitwitter.visitors.Visitor;
-
 /**
- * Basic functions checklist #2, #4, #5
+ * Sets up Users and allows the user to follow other users
+ * and get the user's latest tweet.
  * @author RAKKII
  */
 public class User extends Subject implements Observer, SysEntry {
@@ -43,6 +38,8 @@ public class User extends Subject implements Observer, SysEntry {
         this.attach(user);
     }
 
+    // Not needed but could be helpful later
+    /* 
     public void unfollowUser(User user) {
         if (followingList.contains(user)) {
             followingList.remove(user);
@@ -51,6 +48,7 @@ public class User extends Subject implements Observer, SysEntry {
             this.detach(user);
         }
     }
+    */
 
     public List<User> getFollowersList() {
         return followersList;
@@ -76,14 +74,12 @@ public class User extends Subject implements Observer, SysEntry {
         return userView;
     }
 
-    public boolean inGroup() {
-        return groupName != "Root";
+    public Tweet getMostRecentTweet() {
+        return newsFeed.getRevChronoTweetList().get(0);
     }
 
-    @Override
-    public void accept(Visitor vis) {
-        // TODO Accepts Visitors
-        
+    public boolean inGroup() {
+        return groupName != "Root";
     }
 
     /**
@@ -95,24 +91,19 @@ public class User extends Subject implements Observer, SysEntry {
     public void postTweet(String message) {
         Tweet newTweet = new Tweet(this, message);
         personalFeed.addToFeed(newTweet);
-
-        /** 
-         * User can see their own tweet in their newsFeed, so
-         * it can also be added there
-         */
         newsFeed.addToFeed(newTweet);
     }
 
     /** 
-     * 
+     * Updates each follower's feed.
      */
     @Override
     public void update(Subject subject) {
         if (subject instanceof User) {
             Tweet newTweet = 
-                ((User)subject).newsFeed.getRevChronoTweetList().get(0);
-            this.newsFeed.addToFeed(newTweet);
-            this.userView.updateNewsFeed();
+                this.getMostRecentTweet();
+            ((User)subject).getNewsFeed().addToFeed(newTweet);
+            ((User)subject).userView.updateNewsFeed();
         }
     }
 

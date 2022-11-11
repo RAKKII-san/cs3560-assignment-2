@@ -8,6 +8,10 @@ import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/** 
+ * Contains a user's feed and helper methods surrounding feeds.
+ * @author Rakkii
+ */
 public class Feed {
     Map<Integer, Tweet> tweetMap;
 
@@ -71,6 +75,7 @@ public class Feed {
         return tweetList;
     }
 
+    /* Not needed but might be helpful later
     public void removeUnfollowedUser(User user) {
         for (Map.Entry<Integer, Tweet> entry : tweetMap.entrySet()) {
             if (entry.getValue().getAuthor() == user) {
@@ -78,4 +83,5 @@ public class Feed {
             }
         }
     }
+    */
 }

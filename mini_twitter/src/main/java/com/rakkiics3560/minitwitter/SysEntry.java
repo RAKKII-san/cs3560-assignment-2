@@ -9,6 +9,6 @@ package com.rakkiics3560.minitwitter;
  * Composite Pattern
  * @author Rakkii
  */
-public interface SysEntry extends Visitable {
+public interface SysEntry {
     public String toString();
 }

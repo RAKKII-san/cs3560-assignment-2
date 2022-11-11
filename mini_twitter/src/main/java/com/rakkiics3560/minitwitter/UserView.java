@@ -9,8 +9,13 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
 
+/** 
+ * Generates User's UI, which allows the user to follow other users
+ * and post tweets. The UserView also receives tweets from followed
+ * users and shares them to the feed.
+ * @author Rakkii
+ */
 public class UserView extends JFrame {
     private User userInstance;
 
@@ -41,6 +46,7 @@ public class UserView extends JFrame {
         initComponents();
     }
 
+    /** Builds UI for the User View Panel. */
     private void initComponents() {
         setButtons();
         setTextAreas();
@@ -62,6 +68,7 @@ public class UserView extends JFrame {
         });
     }
 
+    /** Places buttons onto UI. */
     private void setButtons() {
         followUserButton = new JButton("Follow User");
         postTweetButton = new JButton("Post!");
@@ -73,9 +80,12 @@ public class UserView extends JFrame {
         postTweetButton.setBounds(640, 300, 130, 60);
     }
 
+    /** Places TextAreas onto UI. */
     private void setTextAreas() {
         followUserTextArea = new JTextArea();
         tweetMessageTextArea = new JTextArea();
+        followUserTextArea.setLineWrap(true);
+        tweetMessageTextArea.setLineWrap(true);
 
         add(followUserTextArea);
         add(tweetMessageTextArea);
@@ -84,38 +94,39 @@ public class UserView extends JFrame {
         tweetMessageTextArea.setBounds(20,300,600,60);
     }
 
+    /** Places Lists onto UI. */
     private void setLists() {
-        updateFollowers();
+        followingListModel = new DefaultListModel<>();
+        followingList = new JList<>(followingListModel);
+        followingScrollPane = new JScrollPane(followingList);
+
+        newsFeedModel = new DefaultListModel<>();
+        newsFeedList = new JList<>(newsFeedModel);
+        newsFeedScrollPane = new JScrollPane(newsFeedList);
+
+        add(followingScrollPane);
+        add(newsFeedScrollPane);
+
+        updateFollowing();
         updateNewsFeed();
     }
 
-    private void updateFollowers() {
-        followingListModel = new DefaultListModel<>();
-
+    // This is public because User class needs to use it
+    public void updateFollowing() {
         for (User user : userInstance.getFollowingList()) {
             followingListModel.addElement(user.toString());
         }
-
-        followingList = new JList<>(followingListModel);
-        followingScrollPane = new JScrollPane(followingList);
-        add(followingScrollPane);
     }
 
+    // This is public because User class needs to use it
     public void updateNewsFeed() {
-        newsFeedModel = new DefaultListModel<>();
-
+        newsFeedModel.removeAllElements();
         for (Tweet tweet : userInstance.getNewsFeed()
                 .getRevChronoTweetList()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(tweet.getAuthor());
-            sb.append(": ");
-            sb.append(tweet.getMessage());
-            newsFeedModel.addElement(sb.toString());
+            newsFeedModel.addElement(
+                tweet.toString()
+            );
         }
-
-        newsFeedList = new JList<>(newsFeedModel);
-        newsFeedScrollPane = new JScrollPane(newsFeedList);
-        add(newsFeedScrollPane);
     }
 
     private void followUser() {
@@ -123,9 +134,17 @@ public class UserView extends JFrame {
         HashMap<String, User> userMap 
                 = AdminPanel.getAdmin().getUsers();
         if (userMap.containsKey(followedUser)) {
-            userInstance.followUser(userMap.get(followedUser));
-            followingListModel.add(0, followedUser);
-            updateNewsFeed();
+            User followed = userMap.get(followedUser);
+            if (!userInstance.getFollowingList().contains(followed)) {
+                userInstance.followUser(userMap.get(followedUser));
+                followingListModel.add(
+                    0, followedUser
+                );
+            } else {
+                errorMessage = "User already followed.";
+                JOptionPane.showMessageDialog(new JFrame(),errorMessage,
+                "Follow User Error", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             errorMessage = "User does not exist.";
             JOptionPane.showMessageDialog(new JFrame(),errorMessage,
@@ -133,18 +152,15 @@ public class UserView extends JFrame {
         }
     }
 
+    /** Posts tweet and notifies a user's followers. */
     private void postTweet() {
         tweetContent = tweetMessageTextArea.getText();
         if (tweetContent.length() > 0) {
             userInstance.postTweet(tweetContent);
-            /* 
-            StringBuilder sb = new StringBuilder();
-            sb.append(userInstance.toString());
-            sb.append(": ");
-            sb.append(tweetContent);
-            newsFeedModel.add(0, tweetContent);
-            */
-            updateNewsFeed();
+            newsFeedModel.add(
+                0,
+                userInstance.getMostRecentTweet().toString()
+            );
         }
 
         userInstance.notifyObservers();

@@ -1,10 +1,13 @@
 package com.rakkiics3560.minitwitter;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import java.util.regex.Pattern;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,7 +15,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.WindowConstants;
@@ -25,8 +30,7 @@ import javax.swing.WindowConstants;
  * Entrance to the program.
  * @author Rakkii
  */
-public class AdminPanel extends JFrame {
-    // Variables declaration               
+public class AdminPanel extends JFrame {            
     private static AdminPanel adminInstance;
 
     protected static HashMap<String, User> users;
@@ -59,11 +63,9 @@ public class AdminPanel extends JFrame {
     );
 
     private static final int SCREEN_WIDTH = 800;
-    private static final int SCREEN_HEIGHT = 600;
+    private static final int SCREEN_HEIGHT = 600; 
 
-    // End of variables declaration    
-
-    // Private constructor
+    /** Private constructor */
     private AdminPanel() {
         if (adminInstance == null) {
             adminInstance = this;
@@ -87,15 +89,11 @@ public class AdminPanel extends JFrame {
         
         // Button function on click
         countUsersButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(
-                popUpFrame, "Total Number of Users: " + users.size()
-            );
+            countUsers();
         });
 
         countGroupsButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(
-                popUpFrame, "Total Number of Groups: " + groups.size()
-            );
+            countGroups();
         });
 
 
@@ -146,11 +144,80 @@ public class AdminPanel extends JFrame {
                 }
             }
         });
+
+        countTweetsButton.addActionListener(e -> {
+            countTweets();
+        });
+
+        percentPositiveButton.addActionListener(e -> {
+            double posPercent = calculatePositivePercent();
+            String posPercentFormat = String.format(
+                "%.1f", posPercent
+            );
+            
+            if (Double.isNaN(posPercent)) {
+                JOptionPane.showMessageDialog(
+                    popUpFrame, "There are no tweets, so positive " 
+                            + "tweet % cannot be calculated."
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                    popUpFrame, "Positive tweets percent: " 
+                        + posPercentFormat + '%'
+                );
+            }
+        });
     }
     
-    /** 
-     * Places buttons into UI
-     */
+    private double calculatePositivePercent() {
+        Collection<User> userSet = users.values();
+        Collection<Tweet> tweetSet = new HashSet<Tweet>();
+        PositiveTweetVisitor visitor = new PositiveTweetVisitor();
+
+        double posCount = 0;
+
+        for (User user : userSet) {
+            tweetSet.addAll(
+                user.getPersonalFeed().getTweetMap().values()
+            );
+        }
+
+        for (Tweet tweet : tweetSet) {
+            if (tweet.accept(visitor)) {
+                posCount++;
+            }
+        }
+
+        posCount /= tweetSet.size();
+        posCount *= 100;
+
+        return posCount;
+	}
+
+	private void countTweets() {
+        int tweetCount = 0;
+            for (User user : users.values()) {
+                tweetCount += user.getPersonalFeed()
+                                  .getTweetMap().size();
+            }
+        JOptionPane.showMessageDialog(
+            popUpFrame, "Total Number of Tweets: " + tweetCount
+        );
+	}
+
+	private void countUsers() {
+        JOptionPane.showMessageDialog(
+            popUpFrame, "Total Number of Users: " + users.size()
+        );
+	}
+
+    private void countGroups() {
+        JOptionPane.showMessageDialog(
+            popUpFrame, "Total Number of Groups: " + groups.size()
+        );
+    }
+
+	/** Places buttons onto UI. */
     private void setButtons() {
         addUserButton = new JButton("Add User");
         addGroupButton = new JButton("Add Group");
@@ -177,6 +244,7 @@ public class AdminPanel extends JFrame {
         percentPositiveButton.setBounds(595, 480, 170, 60);
     }
 
+    /** Places TreeView onto UI. */
     private void setTree() {
         Group rootGroup = new Group("Root");
         groups.put("Root", rootGroup);
@@ -188,8 +256,27 @@ public class AdminPanel extends JFrame {
         add(treeScrollPane);
         treeScrollPane.setBounds(20,20,365,520);
         
+        tree.setCellRenderer(new DefaultTreeCellRenderer() {
+			@Override
+			public Component getTreeCellRendererComponent(JTree tr, Object value, boolean isSelected, boolean expanded, boolean isLeaf, int row, boolean hasFocus) {
+				Component result = getTreeCellRendererComponent(tr, value, isSelected, expanded, isLeaf, row, hasFocus);
+
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+
+				if (node instanceof Group) {
+					this.setIcon(UIManager.getIcon("FileView.directoryIcon"));
+				}
+
+				if (node instanceof User) {
+					this.setIcon(UIManager.getIcon("FileView.fileIcon"));
+				}
+
+				return result;
+			}
+		});
     }
 
+    /** Places TextAreas onto UI. */
     private void setTextArea() {
         addUserTextArea = new JTextField();
         addGroupTextArea = new JTextField();
@@ -205,7 +292,7 @@ public class AdminPanel extends JFrame {
         return s.length() > 0 && alphPattern.matcher(s).find();
     }
 
-    // Static getter
+    /** Static getter */
     public static AdminPanel getAdmin() {
         if (adminInstance == null) {
             adminInstance = new AdminPanel();
@@ -213,12 +300,13 @@ public class AdminPanel extends JFrame {
         return adminInstance;
     }
     
-    // create user
+    /** Create user */
     private void addUser(String name) {
         name = name.toLowerCase();
         if (!users.containsKey(name)) {
             User newUser = new User(name);
             users.put(name, newUser);
+
             // add node to tree
             DefaultMutableTreeNode node =
                 (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
@@ -226,10 +314,12 @@ public class AdminPanel extends JFrame {
             // if no location selected
             if (node == null) {
                 root.add(newUser);
+                groups.get("Root").addMember(newUser);
             } 
             else {
                 if (node.getAllowsChildren()) { // Groups allow children
                     node.add(newUser);
+                    groups.get(node.toString()).addMember(newUser);
                 } else { // Users do not allow children
                     DefaultMutableTreeNode parent =
                         (DefaultMutableTreeNode)node.getParent();
@@ -246,7 +336,7 @@ public class AdminPanel extends JFrame {
         }
     }
 
-    // create user groups
+    /** create user groups */
     private void addGroup(String name) {
         name = name.toUpperCase();
         if (!groups.containsKey(name)) {
@@ -281,13 +371,6 @@ public class AdminPanel extends JFrame {
     private void updateTree() {
         ((DefaultTreeModel) tree.getModel()).
                 nodesWereInserted(root, new int[]{root.getChildCount() - 1});
-        expandTree();
-    }
-
-    private void expandTree() {
-        for (int i = 0; i < tree.getRowCount(); i++) {
-            tree.expandRow(i);
-        }
     }
 
     public HashMap<String, User> getUsers() {

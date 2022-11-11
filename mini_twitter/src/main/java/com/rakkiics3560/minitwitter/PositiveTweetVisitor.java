@@ -1,13 +1,14 @@
-package com.rakkiics3560.minitwitter.visitors;
+package com.rakkiics3560.minitwitter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
-
-import com.rakkiics3560.minitwitter.User;
-
-public class PositiveSysEntryVisitor implements Visitor {
+/** 
+ * Searches for a positive word in a tweet and returns true if 
+ * visitor finds at least one.
+ * @author Rakkii
+ */
+public class PositiveTweetVisitor implements Visitor {
     private static String[] positiveWords = {
         "adorable", "amazing", "awesome", "angelic", "acclaimed",
         "affirmative", "agreeable", "appealing", "attractive",
@@ -43,15 +44,30 @@ public class PositiveSysEntryVisitor implements Visitor {
         "tranquil", "trusting", "truthful", "upbeat", "unbelievable",
         "valued", "vibrant", "victorious", "victory", "virtuous",
         "vivacious", "welcome", "wholesome", "wonderful", "yes",
-        "yummy", "pog", "poggers"
+        "yummy", "pog", "poggers", "lit", "lovely", "love"
     };
-    private static Set<String> positiveWordSet = 
-            new HashSet<>(Arrays.asList(positiveWords));
+    
+    private static ArrayList<String> positiveWordSet = 
+            new ArrayList<>(Arrays.asList(positiveWords));
 
     @Override
-    public void visit(User user) {
-        // TODO Auto-generated method stub
-        
+    public boolean visitTweet(Tweet tweet) {
+        return findPositiveWords(tweet);
     }
-    
+
+    /**
+     * Tokenizes a tweet into words, then matches each word to
+     * the positive words set.
+     * @return If a positive word was found anywhere in the tweet.
+     */
+    private boolean findPositiveWords(Tweet tweet) {
+        String tweetContent = tweet.getMessage();
+        String[] tokens = tweetContent.split("[.,!?:;'\"-]+\\s*");
+        for (String token : tokens) {
+            if (positiveWordSet.contains(token.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
