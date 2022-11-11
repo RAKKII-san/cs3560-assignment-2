@@ -133,6 +133,12 @@ public class UserView extends JFrame {
         followedUser = followUserTextArea.getText();
         HashMap<String, User> userMap 
                 = AdminPanel.getAdmin().getUsers();
+        if (followedUser.equals(userInstance.toString())) {
+            errorMessage = "You cannot follow yourself.";
+                JOptionPane.showMessageDialog(new JFrame(),errorMessage,
+                "Follow User Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         if (userMap.containsKey(followedUser)) {
             User followed = userMap.get(followedUser);
             if (!userInstance.getFollowingList().contains(followed)) {

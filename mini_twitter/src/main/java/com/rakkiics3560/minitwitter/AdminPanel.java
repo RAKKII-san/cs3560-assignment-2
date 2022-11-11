@@ -79,6 +79,7 @@ public class AdminPanel extends JFrame {
     private void initComponents() {
         setButtons();
         setTree();
+        setCustomIcons();
         setTextArea();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mini Twitter Admin Panel");
@@ -255,11 +256,25 @@ public class AdminPanel extends JFrame {
         treeScrollPane = new JScrollPane(tree);
         add(treeScrollPane);
         treeScrollPane.setBounds(20,20,365,520);
-        
+    }
+
+    /** Places TextAreas onto UI. */
+    private void setTextArea() {
+        addUserTextArea = new JTextField();
+        addGroupTextArea = new JTextField();
+
+        add(addUserTextArea);
+        add(addGroupTextArea);
+
+        addUserTextArea.setBounds(405,20,240,60);
+        addGroupTextArea.setBounds(405,100,240,60);
+    }
+
+    private void setCustomIcons() {
         tree.setCellRenderer(new DefaultTreeCellRenderer() {
 			@Override
 			public Component getTreeCellRendererComponent(JTree tr, Object value, boolean isSelected, boolean expanded, boolean isLeaf, int row, boolean hasFocus) {
-				Component result = getTreeCellRendererComponent(tr, value, isSelected, expanded, isLeaf, row, hasFocus);
+				Component result = super.getTreeCellRendererComponent(tr, value, isSelected, expanded, isLeaf, row, hasFocus);
 
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 
@@ -276,18 +291,6 @@ public class AdminPanel extends JFrame {
 		});
     }
 
-    /** Places TextAreas onto UI. */
-    private void setTextArea() {
-        addUserTextArea = new JTextField();
-        addGroupTextArea = new JTextField();
-
-        add(addUserTextArea);
-        add(addGroupTextArea);
-
-        addUserTextArea.setBounds(405,20,240,60);
-        addGroupTextArea.setBounds(405,100,240,60);
-    }
-
     private boolean isAlphaNumeric(String s) {
         return s.length() > 0 && alphPattern.matcher(s).find();
     }
@@ -302,7 +305,6 @@ public class AdminPanel extends JFrame {
     
     /** Create user */
     private void addUser(String name) {
-        name = name.toLowerCase();
         if (!users.containsKey(name)) {
             User newUser = new User(name);
             users.put(name, newUser);
@@ -315,18 +317,21 @@ public class AdminPanel extends JFrame {
             if (node == null) {
                 root.add(newUser);
                 groups.get("Root").addMember(newUser);
+                updateTree(root);
             } 
             else {
                 if (node.getAllowsChildren()) { // Groups allow children
                     node.add(newUser);
                     groups.get(node.toString()).addMember(newUser);
+                    updateTree(node);
                 } else { // Users do not allow children
                     DefaultMutableTreeNode parent =
                         (DefaultMutableTreeNode)node.getParent();
                     parent.add(newUser);
+                    groups.get(parent.toString()).addMember(newUser);
+                    updateTree(parent);
                 }
             }
-            updateTree();
         } else {
             errorMessage = "Username already exists.";
             JOptionPane.showMessageDialog(
@@ -336,9 +341,8 @@ public class AdminPanel extends JFrame {
         }
     }
 
-    /** create user groups */
+    /** Create user groups. */
     private void addGroup(String name) {
-        name = name.toUpperCase();
         if (!groups.containsKey(name)) {
             Group newGroup = new Group(name);
             groups.put(name, newGroup);
@@ -348,17 +352,23 @@ public class AdminPanel extends JFrame {
             // if no location selected
             if (node == null) {
                 root.add(newGroup);
+                groups.get("Root").addSubgroup(newGroup);
+                updateTree(root); 
             } 
             else {
                 if (node.getAllowsChildren()) { // Groups allow children
                     node.add(newGroup);
+                    groups.get(node.toString()).addSubgroup(newGroup);
+                    updateTree(node); 
                 } else { // Users do not allow children
                     DefaultMutableTreeNode parent =
                         (DefaultMutableTreeNode)node.getParent();
                     parent.add(newGroup);
+                    groups.get(parent.toString()).addSubgroup(newGroup);
+                    updateTree(parent); 
                 }
             }
-            updateTree(); 
+
         } else {
             errorMessage = "Group name already exists.";
             JOptionPane.showMessageDialog(
@@ -368,9 +378,9 @@ public class AdminPanel extends JFrame {
         }
     }
 
-    private void updateTree() {
+    private void updateTree(DefaultMutableTreeNode node) {
         ((DefaultTreeModel) tree.getModel()).
-                nodesWereInserted(root, new int[]{root.getChildCount() - 1});
+                nodesWereInserted(node, new int[]{node.getChildCount() - 1});
     }
 
     public HashMap<String, User> getUsers() {

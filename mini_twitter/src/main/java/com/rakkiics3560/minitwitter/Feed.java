@@ -21,17 +21,10 @@ public class Feed {
 
     public void addToFeed(Tweet tweet) {
         int tweetId = tweet.getTweetId();
-        try {
-            if (tweetMap.containsKey(tweetId)) {
-                throw new IllegalStateException(
-                    "Duplicate TweetId found"
-                );
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
 
-        tweetMap.put(tweetId, tweet);
+        if (!tweetMap.containsKey(tweetId)) {
+            tweetMap.put(tweetId, tweet);
+        }
     }
 
     /**

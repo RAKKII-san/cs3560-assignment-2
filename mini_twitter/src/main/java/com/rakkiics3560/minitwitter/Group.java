@@ -35,6 +35,12 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
         }
     }
 
+    public void addSubgroup(Group group) {
+        if (!groupList.contains(group)) {
+            groupList.add(group);
+        }
+    }
+
     public void setGroupName(String name) {
         groupName = name;
     }
