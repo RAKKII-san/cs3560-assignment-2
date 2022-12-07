@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -34,6 +35,10 @@ public class UserView extends JFrame {
     private JScrollPane followingScrollPane;
     private JScrollPane newsFeedScrollPane;
 
+    private JLabel creationTimeLabel;
+    private JLabel lastUpdateTimeLabel;
+    private JLabel lastUpdateTimeNumberLabel;
+
     private String followedUser;
     private String tweetContent;
     private String errorMessage;
@@ -51,11 +56,12 @@ public class UserView extends JFrame {
         setButtons();
         setTextAreas();
         setLists();
+        setLabels();
         setTitle("User View - " + userInstance.toString());
         setLayout(null);
         setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         setResizable(false);
-        followingScrollPane.setBounds(20,100,750,180);
+        followingScrollPane.setBounds(20,120,750,160);
         newsFeedScrollPane.setBounds(20,380,750,160);
         updateNewsFeed();
         // Button function on click
@@ -76,7 +82,7 @@ public class UserView extends JFrame {
         add(followUserButton);
         add(postTweetButton);
 
-        followUserButton.setBounds(640, 20, 130, 60);
+        followUserButton.setBounds(640, 40, 130, 60);
         postTweetButton.setBounds(640, 300, 130, 60);
     }
 
@@ -90,7 +96,7 @@ public class UserView extends JFrame {
         add(followUserTextArea);
         add(tweetMessageTextArea);
 
-        followUserTextArea.setBounds(20,20,600,60);
+        followUserTextArea.setBounds(20,40,600,60);
         tweetMessageTextArea.setBounds(20,300,600,60);
     }
 
@@ -109,6 +115,33 @@ public class UserView extends JFrame {
 
         updateFollowing();
         updateNewsFeed();
+    }
+
+    /** Places Labels onto UI. */
+    private void setLabels() {
+        StringBuilder creationTimeText = new StringBuilder();
+        creationTimeText.append("Time created: ");
+        System.out.println(userInstance.getCreationTime());
+        creationTimeText.append(userInstance.getCreationTime());
+        creationTimeLabel = new JLabel(creationTimeText.toString());
+        lastUpdateTimeLabel = new JLabel("Time last updated: ");
+        lastUpdateTimeNumberLabel = new JLabel();
+
+        add(creationTimeLabel);
+        add(lastUpdateTimeLabel);
+        add(lastUpdateTimeNumberLabel);
+
+        creationTimeLabel.setBounds(20,20,200,15);
+        lastUpdateTimeLabel.setBounds(240,20,200,15);
+        lastUpdateTimeNumberLabel.setBounds(352,20,200,15);
+        updateLastUpdateTimeLabel();
+    }
+
+    /** Updates Last Update Time Label. */
+    private void updateLastUpdateTimeLabel() {
+        StringBuilder timestampText = new StringBuilder();
+        timestampText.append(userInstance.getLastUpdateTime());
+        lastUpdateTimeNumberLabel.setText(timestampText.toString());
     }
 
     // This is public because User class needs to use it

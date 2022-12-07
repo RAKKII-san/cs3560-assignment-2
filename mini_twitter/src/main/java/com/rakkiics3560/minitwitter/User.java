@@ -16,6 +16,8 @@ public class User extends Subject implements Observer, SysEntry {
     private String groupName;
     private Feed personalFeed;
     private Feed newsFeed;
+    private long creationTime;
+    private long lastUpdateTime;
 
     private UserView userView;
 
@@ -28,7 +30,11 @@ public class User extends Subject implements Observer, SysEntry {
         newsFeed = new Feed();
         setAllowsChildren(false);
         groupName = "Root";
+        creationTime = System.currentTimeMillis();
+        lastUpdateTime = System.currentTimeMillis();
         userView = new UserView(this);
+        System.out.println(creationTime);
+        System.out.println(lastUpdateTime);
     }
 
     public void followUser(User user) {
@@ -36,6 +42,7 @@ public class User extends Subject implements Observer, SysEntry {
         user.getFollowersList().add(this);
         newsFeed.mergeFeed(user.getPersonalFeed());
         user.attach(this);
+        lastUpdateTime = System.currentTimeMillis();
     }
 
     // Not needed but could be helpful later
@@ -78,6 +85,14 @@ public class User extends Subject implements Observer, SysEntry {
         return newsFeed.getRevChronoTweetList().get(0);
     }
 
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
     public boolean inGroup() {
         return groupName != "Root";
     }
@@ -92,6 +107,7 @@ public class User extends Subject implements Observer, SysEntry {
         Tweet newTweet = new Tweet(this, message);
         personalFeed.addToFeed(newTweet);
         newsFeed.addToFeed(newTweet);
+        lastUpdateTime = System.currentTimeMillis();
     }
 
     /** 

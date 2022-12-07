@@ -328,7 +328,7 @@ public class AdminPanel extends JFrame {
     
     /** Create user. */
     private void addUser(String name) {
-        if (!users.containsKey(name)) {
+        if (!users.containsKey(name) && !groups.containsKey(name)) {
             User newUser = new User(name);
             users.put(name, newUser);
 
@@ -356,7 +356,7 @@ public class AdminPanel extends JFrame {
                 }
             }
         } else {
-            errorMessage = "Username already exists.";
+            errorMessage = "ID already exists.";
             JOptionPane.showMessageDialog(
                 new JFrame(), errorMessage, 
                 "Username Error", JOptionPane.ERROR_MESSAGE
@@ -366,7 +366,7 @@ public class AdminPanel extends JFrame {
 
     /** Create user groups. */
     private void addGroup(String name) {
-        if (!groups.containsKey(name)) {
+        if (!groups.containsKey(name) && !users.containsKey(name)) {
             Group newGroup = new Group(name);
             groups.put(name, newGroup);
             // add node to tree
@@ -393,7 +393,7 @@ public class AdminPanel extends JFrame {
             }
 
         } else {
-            errorMessage = "Group name already exists.";
+            errorMessage = "ID name already exists.";
             JOptionPane.showMessageDialog(
                 new JFrame(), errorMessage, 
                 "Group Name Error", JOptionPane.ERROR_MESSAGE

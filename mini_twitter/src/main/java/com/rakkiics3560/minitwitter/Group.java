@@ -16,6 +16,8 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
     private String groupName;
     private List<User> userList;
     private List<Group> groupList; // recursive
+    private long creationTime;
+    private long lastUpdateTime;
 
     // Established group name included in instantiation
     // Group can be instantiated by any number of users
@@ -27,18 +29,22 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
         }
         setAllowsChildren(true);
         groupName = name;
+        creationTime = System.currentTimeMillis();
+        lastUpdateTime = System.currentTimeMillis();
     }
 
     public void addMember(User user) {
         if (!userList.contains(user) && !user.inGroup()) {
             userList.add(user);
         }
+        lastUpdateTime = System.currentTimeMillis();
     }
 
     public void addSubgroup(Group group) {
         if (!groupList.contains(group)) {
             groupList.add(group);
         }
+        lastUpdateTime = System.currentTimeMillis();
     }
 
     public void setGroupName(String name) {
@@ -51,6 +57,14 @@ public class Group extends DefaultMutableTreeNode implements SysEntry {
 
     public List<Group> getGroupList() {
         return groupList;
+    }
+
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
     }
 
     public String toString() {
