@@ -33,8 +33,7 @@ public class User extends Subject implements Observer, SysEntry {
         creationTime = System.currentTimeMillis();
         lastUpdateTime = System.currentTimeMillis();
         userView = new UserView(this);
-        System.out.println(creationTime);
-        System.out.println(lastUpdateTime);
+        updateMRUUserPQueue();
     }
 
     public void followUser(User user) {
@@ -43,6 +42,7 @@ public class User extends Subject implements Observer, SysEntry {
         newsFeed.mergeFeed(user.getPersonalFeed());
         user.attach(this);
         lastUpdateTime = System.currentTimeMillis();
+        updateMRUUserPQueue();
     }
 
     // Not needed but could be helpful later
@@ -63,6 +63,10 @@ public class User extends Subject implements Observer, SysEntry {
 
     public List<User> getFollowingList() {
         return followingList;
+    }
+
+    public String getName() {
+        return userId;
     }
 
     public String getGroup() {
@@ -108,6 +112,7 @@ public class User extends Subject implements Observer, SysEntry {
         personalFeed.addToFeed(newTweet);
         newsFeed.addToFeed(newTweet);
         lastUpdateTime = System.currentTimeMillis();
+        updateMRUUserPQueue();
     }
 
     /** 
@@ -125,5 +130,11 @@ public class User extends Subject implements Observer, SysEntry {
 
     public String toString() {
         return userId;
+    }
+
+    /** Updates Most Recently Updated User on AdminPanel. */
+    private void updateMRUUserPQueue() {
+        AdminPanel.getAdmin().getUserPriorityQueue().remove(this);
+        AdminPanel.getAdmin().getUserPriorityQueue().add(this);
     }
 }

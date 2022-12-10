@@ -6,8 +6,10 @@ import java.awt.event.ActionEvent;
 
 import java.util.regex.Pattern;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.PriorityQueue;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -35,6 +37,8 @@ public class AdminPanel extends JFrame {
 
     protected static HashMap<String, User> users;
     protected static HashMap<String, Group> groups;
+    protected static PriorityQueue<User> lastUpdatedUsers = 
+            new PriorityQueue<>(new UserUpdateComparator());
 
     private DefaultMutableTreeNode root;
     private DefaultMutableTreeNode userViewSelection;
@@ -52,6 +56,8 @@ public class AdminPanel extends JFrame {
     private JButton countUsersButton;
     private JButton openUserViewButton;
     private JButton percentPositiveButton;
+    private JButton validateButton;
+    private JButton checkLastUpdatedUserButton;
 
     private String newUserName;
     private String newGroupName;
@@ -168,6 +174,41 @@ public class AdminPanel extends JFrame {
                 );
             }
         });
+
+        validateButton.addActionListener(e -> {
+            HashSet<String> nameSet = new HashSet<>();
+            for (String name : users.keySet()) {
+                nameSet.add(name);
+            }
+            for (String name : groups.keySet()) {
+                nameSet.add(name);
+            }
+            if (nameSet.size() == users.size() + groups.size()) {
+                JOptionPane.showMessageDialog(
+                    popUpFrame, "All users and groups are valid."
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                    popUpFrame, 
+                    "There are at least two invalid user/group names."
+                );
+            }
+        });
+
+        checkLastUpdatedUserButton.addActionListener(e -> {
+            if (users.size() == 0) {
+                JOptionPane.showMessageDialog(
+                    popUpFrame, "There are no users."
+                );
+            } else {
+                String lastUpdatedUserName = 
+                       lastUpdatedUsers.peek().getName();
+                JOptionPane.showMessageDialog(
+                    popUpFrame, 
+                    "Last Updated User: " + lastUpdatedUserName
+                );
+            }
+        });
     }
     
     /**
@@ -232,6 +273,8 @@ public class AdminPanel extends JFrame {
         countTweetsButton = new JButton("Count Tweets");
         openUserViewButton = new JButton("Open User");
         percentPositiveButton = new JButton("Show Positive %");
+        validateButton = new JButton("Validate");
+        checkLastUpdatedUserButton = new JButton("Last Updated User");
 
         add(addUserButton);
         add(addGroupButton);
@@ -240,6 +283,8 @@ public class AdminPanel extends JFrame {
         add(countGroupsButton);
         add(countTweetsButton);
         add(percentPositiveButton);
+        add(validateButton);
+        add(checkLastUpdatedUserButton);
 
         addUserButton.setBounds(665, 20, 100, 60);
         addGroupButton.setBounds(665, 100, 100, 60);
@@ -248,6 +293,8 @@ public class AdminPanel extends JFrame {
         countGroupsButton.setBounds(595, 400, 170, 60);
         countTweetsButton.setBounds(405, 480, 170, 60);
         percentPositiveButton.setBounds(595, 480, 170, 60);
+        validateButton.setBounds(405, 320, 170, 60);
+        checkLastUpdatedUserButton.setBounds(595, 320, 170, 60);
     }
 
     /** Places TreeView onto UI. */
@@ -415,5 +462,22 @@ public class AdminPanel extends JFrame {
 
     public HashMap<String, Group> getGroups() {
         return groups;
+    }
+
+    public PriorityQueue<User> getUserPriorityQueue() {
+        return lastUpdatedUsers;
+    }
+}
+
+/** Used for the Most Recently Updated User comparison. */
+class UserUpdateComparator implements Comparator<User> {
+    @Override
+    public int compare(User o1, User o2) {
+        if (o1.getLastUpdateTime() < o2.getLastUpdateTime()) {
+            return 1;
+        } else if (o1.getLastUpdateTime() > o2.getLastUpdateTime()) {
+            return -1;
+        }
+        return 0;
     }
 }

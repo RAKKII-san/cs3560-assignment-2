@@ -121,7 +121,6 @@ public class UserView extends JFrame {
     private void setLabels() {
         StringBuilder creationTimeText = new StringBuilder();
         creationTimeText.append("Time created: ");
-        System.out.println(userInstance.getCreationTime());
         creationTimeText.append(userInstance.getCreationTime());
         creationTimeLabel = new JLabel(creationTimeText.toString());
         lastUpdateTimeLabel = new JLabel("Time last updated: ");
@@ -137,7 +136,7 @@ public class UserView extends JFrame {
         updateLastUpdateTimeLabel();
     }
 
-    /** Updates Last Update Time Label. */
+    /** Updates Last Update Time shown on UserView. */
     private void updateLastUpdateTimeLabel() {
         StringBuilder timestampText = new StringBuilder();
         timestampText.append(userInstance.getLastUpdateTime());
@@ -180,6 +179,7 @@ public class UserView extends JFrame {
                 followingListModel.add(
                     0, followedUser
                 );
+                updateLastUpdateTimeLabel();
             } else {
                 errorMessage = "User already followed.";
                 JOptionPane.showMessageDialog(new JFrame(),errorMessage,
@@ -204,5 +204,6 @@ public class UserView extends JFrame {
         }
 
         userInstance.notifyObservers();
+        updateLastUpdateTimeLabel();
     }
 }
